@@ -14,6 +14,8 @@ import (
 
 var (
 	address = flag.String("address", "127.0.0.1:8080", "Set listening address")
+	tlscert = flag.String("tlscert", "", "TLS certificate path")
+	tlskey  = flag.String("tlskey", "", "TLS key path")
 )
 
 func main() {
@@ -25,7 +27,12 @@ func main() {
 
 	go func() {
 		log.Infof("listening on %s", *address)
-		log.Fatal(http.ListenAndServe(*address, handler.BuildRouter()))
+		router := handler.BuildRouter()
+		if *tlscert == "" && *tlskey == "" {
+			log.Fatal(http.ListenAndServe(*address, router))
+		} else {
+			log.Fatal(http.ListenAndServeTLS(*address, *tlscert, *tlskey, router))
+		}
 	}()
 
 	waitForExit(handler.Stop)
