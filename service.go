@@ -20,13 +20,15 @@ type SignalHandler interface {
 }
 
 type SignalService struct {
+	config          *Config
 	signalHandlers  map[string]SignalHandler
 	serviceStopChan chan bool
 	handlerStopChan chan string
 }
 
-func NewSignalService() *SignalService {
+func NewSignalService(config *Config) *SignalService {
 	signalService := &SignalService{
+		config:          config,
 		signalHandlers:  make(map[string]SignalHandler),
 		serviceStopChan: make(chan bool),
 		handlerStopChan: make(chan string),
@@ -50,7 +52,7 @@ func (service *SignalService) Serve(w http.ResponseWriter, r *http.Request, peer
 	switch strings.ToLower(protocol) {
 	case sseProtocol:
 		log.WithFields(log.Fields{"peerId": peer.Id}).Infof("serving %s", sseProtocol)
-		signalHandler := NewSSESignalHandler(peer, service.handlerStopChan)
+		signalHandler := NewSSESignalHandler(service.config.PeerConfig, peer, service.handlerStopChan)
 		service.signalHandlers[peer.Id] = signalHandler
 		signalHandler.Serve(w, r)
 	}

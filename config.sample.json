@@ -1,0 +1,16 @@
+{
+	"peer": {
+		"iceServers": [
+			{
+				"url": "stun:numb.viagenie.ca"
+			},
+			{
+				"url": "turn:numb.viagenie.ca",
+				"username": "<your username>",
+				"credential": "<your password>"
+			}
+		]
+	},
+	"tlsCert": "",
+	"tlsKey": ""
+}

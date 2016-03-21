@@ -1,6 +1,7 @@
 package signalbouncer
 
 import (
+	"encoding/json"
 	"errors"
 	"strings"
 	"sync"
@@ -62,6 +63,11 @@ func (peer *Peer) Stop() {
 	peer.stopChan <- true
 	close(peer.stopChan)
 	close(peer.dataChan)
+}
+
+func (peer *Peer) String() string {
+	bytes, _ := json.MarshalIndent(peer, "", "  ")
+	return string(bytes)
 }
 
 // Self consumes from peer's data channel if no subscriber,

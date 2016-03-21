@@ -96,7 +96,7 @@ func (handler *Handler) BuildRouter() *httprouter.Router {
 	router := httprouter.New()
 	router.POST("/signal/:roomName/:peerId", handler.RoomSignalHandler)
 	router.OPTIONS("/signal/:roomName/:peerId", handler.CORSHandler)
-	router.GET("/stream/:protocol/:roomName", handler.StreamHandler)
+	router.GET("/signal/stream/:protocol/:roomName", handler.StreamHandler)
 	return router
 }
 

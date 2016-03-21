@@ -13,25 +13,25 @@ import (
 )
 
 var (
-	address = flag.String("address", "127.0.0.1:8080", "Set listening address")
-	tlscert = flag.String("tlscert", "", "TLS certificate path")
-	tlskey  = flag.String("tlskey", "", "TLS key path")
+	address    = flag.String("address", "127.0.0.1:8080", "Set listening address")
+	configFile = flag.String("configFile", "config.json", "Path to config file")
 )
 
 func main() {
 	flag.Parse()
 
+	config := signalbouncer.LoadConfig(*configFile)
 	signalRooms := signalbouncer.NewSignalRooms()
-	signalService := signalbouncer.NewSignalService()
+	signalService := signalbouncer.NewSignalService(config)
 	handler := signalbouncer.NewHandler(signalRooms, signalService)
 
 	go func() {
 		log.Infof("listening on %s", *address)
 		router := handler.BuildRouter()
-		if *tlscert == "" && *tlskey == "" {
+		if config.TlsCert == "" && config.TlsKey == "" {
 			log.Fatal(http.ListenAndServe(*address, router))
 		} else {
-			log.Fatal(http.ListenAndServeTLS(*address, *tlscert, *tlskey, router))
+			log.Fatal(http.ListenAndServeTLS(*address, config.TlsCert, config.TlsKey, router))
 		}
 	}()
 

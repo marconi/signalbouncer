@@ -19,6 +19,7 @@ var (
 )
 
 type SSESignalHandler struct {
+	peerConfig      *PeerConfig
 	peer            *Peer
 	dataCounter     int64
 	dataChan        chan string
@@ -26,8 +27,9 @@ type SSESignalHandler struct {
 	handlerStopChan chan<- string
 }
 
-func NewSSESignalHandler(peer *Peer, handlerStopChan chan<- string) *SSESignalHandler {
+func NewSSESignalHandler(peerConfig *PeerConfig, peer *Peer, handlerStopChan chan<- string) *SSESignalHandler {
 	handler := &SSESignalHandler{
+		peerConfig:      peerConfig,
 		peer:            peer,
 		dataChan:        make(chan string),
 		stopChan:        make(chan bool),
@@ -47,9 +49,15 @@ func (sse *SSESignalHandler) Serve(w http.ResponseWriter, r *http.Request) {
 	writeHeaders(w, sseHeaders)
 	w.(http.Flusher).Flush()
 
+	// send config
+	sse.dataCounter += int64(1)
+
+	fmt.Fprint(w, sseFormatData(sse.dataCounter, "config", sse.peerConfig.String()))
+	w.(http.Flusher).Flush()
+
 	// send peer id
 	sse.dataCounter += int64(1)
-	fmt.Fprint(w, sseFormatData(sse.dataCounter, "peerId", sse.peer.Id))
+	fmt.Fprint(w, sseFormatData(sse.dataCounter, "peerId", sse.peer.String()))
 	w.(http.Flusher).Flush()
 
 	// poll for data
