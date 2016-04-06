@@ -3,7 +3,7 @@
 WebRTC signaling server.
 
 - Multi-protocol
-- Config forwarding
+- Config forwarding (ie. ICE servers)
 
 ### Protocols
 
@@ -11,7 +11,6 @@ WebRTC signaling server.
 
 ### Todos
 
-- Support for ICE servers
 - Support for XHR Long-Polling
 - Support for Websocket
 - Move room to external for service immutability
