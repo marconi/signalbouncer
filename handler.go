@@ -89,6 +89,7 @@ func (handler *Handler) StreamHandler(w http.ResponseWriter, r *http.Request, ps
 		return
 	}
 
+	writeHeaders(w, corsHeaders)
 	handler.signalService.Serve(w, r, peer, protocol)
 }
 
